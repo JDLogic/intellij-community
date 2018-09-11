@@ -110,6 +110,8 @@ public class SingleClassesTest {
   @Test public void testEmptyBlocks() { doTest("pkg/TestEmptyBlocks"); }
   @Test public void testPrivateEmptyConstructor() { doTest("pkg/TestPrivateEmptyConstructor"); }
   @Test public void testSynchronizedUnprotected() { doTest("pkg/TestSynchronizedUnprotected"); }
+  @Test public void testLambdaCast() { doTest("pkg/TestLambdaCast", "pkg/TestLambdaCastInterface",
+                                              "pkg/TestLambdaCastDerivedInterface"); }
 
 
   // TODO: fix all below

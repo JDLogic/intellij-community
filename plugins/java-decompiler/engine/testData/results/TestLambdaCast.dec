@@ -1,0 +1,50 @@
+package pkg;
+
+import java.util.ArrayList;
+
+public class TestLambdaCast {
+   void foo(TestLambdaCastInterface var1) {
+   }// 8
+
+   void bar() {
+      this.foo((TestLambdaCastDerivedInterface)() -> {// 11
+         return 0;// 12
+      });
+      ArrayList var1 = new ArrayList();// 15
+      var1.add((TestLambdaCastInterface)() -> {// 17
+         return "test";// 18
+      });
+   }// 20
+}
+
+class 'pkg/TestLambdaCast' {
+   method 'foo (Lpkg/TestLambdaCastInterface;)V' {
+      0      6
+   }
+
+   method 'lambda$bar$0 ()I' {
+      0      10
+      1      10
+   }
+
+   method 'lambda$bar$1 ()Ljava/lang/String;' {
+      0      14
+      2      14
+   }
+
+   method 'bar ()V' {
+      6      9
+      10      12
+      17      13
+      1d      16
+   }
+}
+
+Lines mapping:
+8 <-> 7
+11 <-> 10
+12 <-> 11
+15 <-> 13
+17 <-> 14
+18 <-> 15
+20 <-> 17

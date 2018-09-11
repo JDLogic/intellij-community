@@ -2,14 +2,18 @@
 package org.jetbrains.java.decompiler.struct;
 
 import org.jetbrains.java.decompiler.code.CodeConstants;
+import org.jetbrains.java.decompiler.main.DecompilerContext;
 import org.jetbrains.java.decompiler.struct.consts.ConstantPool;
 import org.jetbrains.java.decompiler.struct.consts.PrimitiveConstant;
+import org.jetbrains.java.decompiler.struct.gen.MethodDescriptor;
 import org.jetbrains.java.decompiler.struct.lazy.LazyLoader;
 import org.jetbrains.java.decompiler.util.DataInputFullStream;
 import org.jetbrains.java.decompiler.util.InterpreterUtil;
 import org.jetbrains.java.decompiler.util.VBStyleCollection;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
   class_file {
@@ -113,6 +117,37 @@ public class StructClass extends StructMember {
 
   public StructMethod getMethod(String name, String descriptor) {
     return methods.getWithKey(InterpreterUtil.makeUniqueKey(name, descriptor));
+  }
+
+  public boolean hasMatchingMethod(String name, String descriptor) {
+    MethodDescriptor desc = MethodDescriptor.parseDescriptor(descriptor);
+
+    for (StructMethod mt : getMethods()) {
+      if (name.equals(mt.getName())) {
+        MethodDescriptor md = MethodDescriptor.parseDescriptor(mt.getDescriptor());
+        if (md.params.length == desc.params.length) {
+          boolean isMatch = true;
+          for (int x = 0; x < md.params.length; x++) {
+            if (md.params[x].typeFamily != desc.params[x].typeFamily) {
+              isMatch = false;
+              break;
+            }
+          }
+          if (isMatch) {
+            return true;
+          }
+        }
+      }
+    }
+
+    if (superClass != null) {
+      StructClass cls = DecompilerContext.getStructContext().getClass((String)superClass.value);
+      if (cls != null && cls.hasMatchingMethod(name, descriptor)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public String getInterface(int i) {

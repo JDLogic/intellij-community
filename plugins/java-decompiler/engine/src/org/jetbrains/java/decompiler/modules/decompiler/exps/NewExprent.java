@@ -34,7 +34,9 @@ public class NewExprent extends Exprent {
   private boolean isVarArgParam;
   private boolean anonymous;
   private boolean lambda;
+  private boolean methodReference;
   private boolean enumConst;
+  private String lambdaMethodKey;
 
   public NewExprent(VarType newType, ListStack<Exprent> stack, int arrayDim, Set<Integer> bytecodeOffsets) {
     this(newType, getDimensions(arrayDim, stack), bytecodeOffsets);
@@ -47,12 +49,16 @@ public class NewExprent extends Exprent {
 
     anonymous = false;
     lambda = false;
+    methodReference = false;
+    lambdaMethodKey = "";
     if (newType.type == CodeConstants.TYPE_OBJECT && newType.arrayDim == 0) {
       ClassNode node = DecompilerContext.getClassProcessor().getMapRootClasses().get(newType.value);
       if (node != null && (node.type == ClassNode.CLASS_ANONYMOUS || node.type == ClassNode.CLASS_LAMBDA)) {
         anonymous = true;
         if (node.type == ClassNode.CLASS_LAMBDA) {
           lambda = true;
+          methodReference = node.lambdaInformation.is_method_reference;
+          lambdaMethodKey = InterpreterUtil.makeUniqueKey(node.lambdaInformation.method_name, node.lambdaInformation.method_descriptor);
         }
       }
     }
@@ -469,6 +475,10 @@ public class NewExprent extends Exprent {
     return lambda;
   }
 
+  public boolean isMethodReference() {
+    return methodReference;
+  }
+
   public boolean isAnonymous() {
     return anonymous;
   }
@@ -479,5 +489,9 @@ public class NewExprent extends Exprent {
 
   public void setEnumConst(boolean enumConst) {
     this.enumConst = enumConst;
+  }
+
+  public String getLambdaMethodKey() {
+    return lambdaMethodKey;
   }
 }
